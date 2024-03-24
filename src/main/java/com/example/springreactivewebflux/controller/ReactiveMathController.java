@@ -1,14 +1,12 @@
 package com.example.springreactivewebflux.controller;
 
+import com.example.springreactivewebflux.dto.MultiplyRequestDto;
 import com.example.springreactivewebflux.dto.Response;
 import com.example.springreactivewebflux.service.ReactiveMathService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.json.AbstractJackson2Decoder;
 import org.springframework.http.codec.json.AbstractJackson2Encoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,5 +24,10 @@ public class ReactiveMathController {
     @GetMapping("/table/{input}")
     public Flux<Response> multiplicationTable(@PathVariable int input) {
         return this.reactiveMathService.multiplicationTable(input);
+    }
+
+    @PostMapping("/multiply")
+    public Mono<Response> multiply(@RequestBody Mono<MultiplyRequestDto> request) {
+        return this.reactiveMathService.multiply(request);
     }
 }
