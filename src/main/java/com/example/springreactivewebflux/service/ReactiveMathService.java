@@ -6,6 +6,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class ReactiveMathService {
@@ -15,6 +18,12 @@ public class ReactiveMathService {
     }
 
     public Flux<Response> multiplicationTable(int input) {
+//        List<Response> list = IntStream.rangeClosed(1, 10)
+//                .peek(i -> SleepUtil.sleepSecond(1))
+//                .peek(i -> System.out.println("math-service processing :" + i))
+//                .mapToObj(i -> new Response(i * input))
+//                .collect(Collectors.toList());
+//        return Flux.fromIterable(list);
         return Flux.range(1, 10)
 //                .doOnNext(i -> SleepUtil.sleepSecond(1))
                 .delayElements(Duration.ofSeconds(1))
