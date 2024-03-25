@@ -19,14 +19,21 @@ public class RouterConfig {
     private RequestHeader requestHeader;
 
     @Bean
+    public RouterFunction<ServerResponse> highLevelRouter() {
+        return RouterFunctions.route()
+                .path("router", this::serverResponseRouterFunction)
+                .build();
+    }
+
+    @Bean
     public RouterFunction<ServerResponse> serverResponseRouterFunction() {
         return RouterFunctions.route()
-                .GET("router/square/{input}", requestHeader::squareHandler)
-                .GET("router/table/{input}", requestHeader::tableHandler)
-                .GET("router/table/{input}/stream", requestHeader::tableStreamHandler)
-                .POST("router/multiply", requestHeader::multiplyHandler)
+                .GET("square/{input}", requestHeader::squareHandler)
+                .GET("table/{input}", requestHeader::tableHandler)
+                .GET("table/{input}/stream", requestHeader::tableStreamHandler)
+                .POST("multiply", requestHeader::multiplyHandler)
                 .onError(InputValidationException.class, exceptionHandler())
-                .GET("router/square/{input}/validation", requestHeader::squareHandlerWithValidation)
+                .GET("square/{input}/validation", requestHeader::squareHandlerWithValidation)
                 .build();
     }
 
