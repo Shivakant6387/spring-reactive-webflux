@@ -1,5 +1,6 @@
 package com.example.springreactivewebflux.config;
 
+import com.example.springreactivewebflux.dto.MultiplyRequestDto;
 import com.example.springreactivewebflux.dto.Response;
 import com.example.springreactivewebflux.service.ReactiveMathService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,11 @@ public class RequestHeader {
         return ServerResponse.ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(responseFlux, Response.class);
+    }
+
+    public Mono<ServerResponse> multiplyHandler(ServerRequest serverRequest) {
+        Mono<MultiplyRequestDto> requestDtoMono = serverRequest.bodyToMono(MultiplyRequestDto.class);
+        Mono<Response> responseMono = this.reactiveMathService.multiply(requestDtoMono);
+        return ServerResponse.ok().body(responseMono, Response.class);
     }
 }
