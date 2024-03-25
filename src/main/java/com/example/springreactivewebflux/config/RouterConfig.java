@@ -5,10 +5,7 @@ import com.example.springreactivewebflux.exception.InputValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.function.server.ServerRequest;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Mono;
 
 import java.util.function.BiFunction;
@@ -28,7 +25,8 @@ public class RouterConfig {
     @Bean
     public RouterFunction<ServerResponse> serverResponseRouterFunction() {
         return RouterFunctions.route()
-                .GET("square/{input}", requestHeader::squareHandler)
+                .GET("square/{input}", RequestPredicates.path("*/1?"), requestHeader::squareHandler)
+                .GET("square/{input}", request -> ServerResponse.badRequest().bodyValue("only 10-19 allowed"))
                 .GET("table/{input}", requestHeader::tableHandler)
                 .GET("table/{input}/stream", requestHeader::tableStreamHandler)
                 .POST("multiply", requestHeader::multiplyHandler)
