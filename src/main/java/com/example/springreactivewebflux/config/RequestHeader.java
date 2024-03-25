@@ -1,7 +1,9 @@
 package com.example.springreactivewebflux.config;
 
+import com.example.springreactivewebflux.dto.InputFailedValidationResponse;
 import com.example.springreactivewebflux.dto.MultiplyRequestDto;
 import com.example.springreactivewebflux.dto.Response;
+import com.example.springreactivewebflux.exception.InputValidationException;
 import com.example.springreactivewebflux.service.ReactiveMathService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,4 +43,14 @@ public class RequestHeader {
         Mono<Response> responseMono = this.reactiveMathService.multiply(requestDtoMono);
         return ServerResponse.ok().body(responseMono, Response.class);
     }
+
+    public Mono<ServerResponse> squareHandlerWithValidation(ServerRequest serverRequest) {
+        int input = Integer.parseInt(serverRequest.pathVariable("input"));
+        if (input < 10 || input > 20) {
+            return Mono.error(new InputValidationException(input));
+        }
+        Mono<Response> responseMono = this.reactiveMathService.findSquare(input);
+        return ServerResponse.ok().body(responseMono, Response.class);
+    }
+
 }
