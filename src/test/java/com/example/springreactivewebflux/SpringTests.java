@@ -1,8 +1,10 @@
 package com.example.springreactivewebflux;
 
+import com.example.springreactivewebflux.dto.MultiplyRequestDto;
 import com.example.springreactivewebflux.dto.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -59,5 +61,26 @@ class SpringTests extends BaseTest {
         StepVerifier.create(response)
                 .expectNextCount(10)
                 .verifyComplete();
+    }
+
+    @Test
+    public void postTest() {
+        Mono<Response> response = this.webClient
+                .post()
+                .uri("/api/reactive/math/multiply")
+                .bodyValue(multiplyRequestDto(5, 5))
+                .retrieve()
+                .bodyToMono(Response.class)
+                .doOnNext(System.out::println);
+        StepVerifier.create(response)
+                .expectNextCount(1)
+                .verifyComplete();
+    }
+
+    private MultiplyRequestDto multiplyRequestDto(int num1, int num2) {
+        MultiplyRequestDto multiplyRequestDto = new MultiplyRequestDto();
+        multiplyRequestDto.setFirst(num1);
+        multiplyRequestDto.setSecond(num2);
+        return multiplyRequestDto;
     }
 }
