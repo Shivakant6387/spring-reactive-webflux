@@ -76,7 +76,20 @@ class SpringTests extends BaseTest {
                 .expectNextCount(1)
                 .verifyComplete();
     }
-
+    @Test
+    public void postHeaderTest() {
+        Mono<Response> response = this.webClient
+                .post()
+                .uri("/api/reactive/math/multiply")
+                .bodyValue(multiplyRequestDto(5, 5))
+                .headers(h->h.set("someKey","someValue"))
+                .retrieve()
+                .bodyToMono(Response.class)
+                .doOnNext(System.out::println);
+        StepVerifier.create(response)
+                .expectNextCount(1)
+                .verifyComplete();
+    }
     private MultiplyRequestDto multiplyRequestDto(int num1, int num2) {
         MultiplyRequestDto multiplyRequestDto = new MultiplyRequestDto();
         multiplyRequestDto.setFirst(num1);
