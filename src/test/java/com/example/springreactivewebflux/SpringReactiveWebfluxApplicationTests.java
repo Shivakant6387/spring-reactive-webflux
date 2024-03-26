@@ -1,13 +1,9 @@
 package com.example.springreactivewebflux;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.reactive.function.client.WebClient;
 
-@SpringBootTest
-class SpringReactiveWebfluxApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
+class SpringReactiveWebfluxApplicationTests extends BaseTest {
+    @Autowired
+    private WebClient webClient;
 }
