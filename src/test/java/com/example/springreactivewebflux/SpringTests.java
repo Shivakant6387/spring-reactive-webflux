@@ -1,9 +1,12 @@
 package com.example.springreactivewebflux;
 
+import com.example.springreactivewebflux.dto.InputFailedValidationResponse;
 import com.example.springreactivewebflux.dto.MultiplyRequestDto;
 import com.example.springreactivewebflux.dto.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
@@ -109,7 +112,19 @@ class SpringTests extends BaseTest {
                 .doOnNext(System.out::println)
                 .doOnError(System.out::println);
         StepVerifier.create(response)
-                .verifyError(WebClientResponseException.class);
+                .expectNextCount(1)
+                .verifyComplete();
     }
 
+    @Test
+    public void badRequestExchangeTest() {
+        Mono<Object> response = this.webClient
+                .get()
+                .uri("/api/reactive/math/validation/square/{input}/throw", 5)
+                .exchangeToMono(ClientResponse::createError)
+                .doOnNext(System.out::println)
+                .doOnError(System.out::println);
+        StepVerifier.create(response)
+                .verifyError(WebClientResponseException.class);
+    }
 }
