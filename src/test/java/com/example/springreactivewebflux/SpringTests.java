@@ -4,8 +4,8 @@ import com.example.springreactivewebflux.dto.MultiplyRequestDto;
 import com.example.springreactivewebflux.dto.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -76,13 +76,14 @@ class SpringTests extends BaseTest {
                 .expectNextCount(1)
                 .verifyComplete();
     }
+
     @Test
     public void postHeaderTest() {
         Mono<Response> response = this.webClient
                 .post()
                 .uri("/api/reactive/math/multiply")
                 .bodyValue(multiplyRequestDto(5, 5))
-                .headers(h->h.set("someKey","someValue"))
+                .headers(h -> h.set("someKey", "someValue"))
                 .retrieve()
                 .bodyToMono(Response.class)
                 .doOnNext(System.out::println);
@@ -90,10 +91,25 @@ class SpringTests extends BaseTest {
                 .expectNextCount(1)
                 .verifyComplete();
     }
+
     private MultiplyRequestDto multiplyRequestDto(int num1, int num2) {
         MultiplyRequestDto multiplyRequestDto = new MultiplyRequestDto();
         multiplyRequestDto.setFirst(num1);
         multiplyRequestDto.setSecond(num2);
         return multiplyRequestDto;
     }
+
+    @Test
+    public void badRequestTest() {
+        Mono<Response> response = this.webClient
+                .get()
+                .uri("/api/reactive/math/validation/square/{input}/throw", 5)
+                .retrieve()
+                .bodyToMono(Response.class)
+                .doOnNext(System.out::println)
+                .doOnError(System.out::println);
+        StepVerifier.create(response)
+                .verifyError(WebClientResponseException.class);
+    }
+
 }
