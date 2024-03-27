@@ -134,12 +134,24 @@ class SpringTests extends BaseTest {
     String queryParams = "http://localhost:8866/api/reactive/math/search?count={count}&page={page}";
 
     @Test
-    public void queryParam() {
+    public void queryParamses() {
         URI uri = UriComponentsBuilder.fromHttpUrl(queryParams)
                 .build(10, 20);
         Flux<Integer> integerFlux = this.webClient
                 .get()
                 .uri(uri)
+                .retrieve()
+                .bodyToFlux(Integer.class)
+                .doOnNext(System.out::println);
+        StepVerifier.create(integerFlux)
+                .expectNextCount(2)
+                .verifyComplete();
+    }
+    @Test
+    public void queryParams() {
+        Flux<Integer> integerFlux = this.webClient
+                .get()
+                .uri(b->b.path("/api/reactive/math/search").query("count={count}&page={page}").build(10,20))
                 .retrieve()
                 .bodyToFlux(Integer.class)
                 .doOnNext(System.out::println);
