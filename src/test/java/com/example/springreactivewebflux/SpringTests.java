@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.net.URI;
+import java.util.Map;
 
 class SpringTests extends BaseTest {
     @Autowired
@@ -147,11 +148,13 @@ class SpringTests extends BaseTest {
                 .expectNextCount(2)
                 .verifyComplete();
     }
+
     @Test
     public void queryParams() {
+        Map<String, Integer> map = Map.of("count", 20, "page", 30);
         Flux<Integer> integerFlux = this.webClient
                 .get()
-                .uri(b->b.path("/api/reactive/math/search").query("count={count}&page={page}").build(10,20))
+                .uri(b -> b.path("/api/reactive/math/search").query("count={count}&page={page}").build(map))
                 .retrieve()
                 .bodyToFlux(Integer.class)
                 .doOnNext(System.out::println);
