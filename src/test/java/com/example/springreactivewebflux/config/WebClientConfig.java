@@ -25,6 +25,13 @@ public class WebClientConfig {
                 .filter(this::sessionToken)
                 .build();
     }
+    @Bean
+    public WebClient webClientAuth() {
+        return WebClient.builder()
+                .baseUrl("http://localhost:8866")
+                .filter(this::sessionBasicToken)
+                .build();
+    }
 
     private Mono<ClientResponse> sessionToken(ClientRequest request, ExchangeFunction exchangeFunction) {
         System.out.println("generating session token");
@@ -32,5 +39,20 @@ public class WebClientConfig {
                 .headers(headers -> headers.setBasicAuth("some-lengthy-jwt"))
                 .build();
         return exchangeFunction.exchange(build);
+    }
+
+    private Mono<ClientResponse> sessionBasicToken(ClientRequest request, ExchangeFunction exchangeFunction) {
+        ClientRequest clientRequest = request.attribute("auth")
+                .map(v -> v.equals("basic") ? withBasicAuth(request) : withOAuth(request))
+                .orElse(request);
+        return exchangeFunction.exchange(clientRequest);
+    }
+
+    private ClientRequest withBasicAuth(ClientRequest request) {
+        return ClientRequest.from(request).headers(headers -> headers.setBasicAuth("username", "password")).build();
+    }
+
+    private ClientRequest withOAuth(ClientRequest request) {
+        return ClientRequest.from(request).headers(headers -> headers.setBearerAuth("jwt token")).build();
     }
 }

@@ -1,4 +1,5 @@
 package com.example.springreactivewebflux;
+
 import com.example.springreactivewebflux.dto.MultiplyRequestDto;
 import com.example.springreactivewebflux.dto.Response;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ import java.util.Map;
 class SpringTests extends BaseTest {
     @Autowired
     private WebClient webClient;
+    @Autowired
+    private WebClient webClientAuth;
     @Autowired
     private WebClient webClients;
 
@@ -104,13 +107,14 @@ class SpringTests extends BaseTest {
         multiplyRequestDto.setSecond(num2);
         return multiplyRequestDto;
     }
+
     @Test
     public void postHeadersTest() {
         Mono<Response> response = this.webClient
                 .post()
                 .uri("/api/reactive/math/multiply")
                 .bodyValue(multiplyRequestDto(5, 5))
-                .headers(headers -> headers.setBasicAuth("Shivakant Singh","Do not carry"))
+                .headers(headers -> headers.setBasicAuth("Shivakant Singh", "Do not carry"))
                 .retrieve()
                 .bodyToMono(Response.class)
                 .doOnNext(System.out::println);
@@ -118,13 +122,14 @@ class SpringTests extends BaseTest {
                 .expectNextCount(1)
                 .verifyComplete();
     }
+
     @Test
     public void postHeaderTokenTest() {
         Mono<Response> response = this.webClients
                 .post()
                 .uri("/api/reactive/math/multiply")
                 .bodyValue(multiplyRequestDto(5, 5))
-                .headers(headers -> headers.setBasicAuth("Shivakant Singh","Do not carry"))
+                .headers(headers -> headers.setBasicAuth("Shivakant Singh", "Do not carry"))
                 .retrieve()
                 .bodyToMono(Response.class)
                 .doOnNext(System.out::println);
@@ -132,13 +137,14 @@ class SpringTests extends BaseTest {
                 .expectNextCount(1)
                 .verifyComplete();
     }
+
     @Test
     public void postHeadersAuthTest() {
         Mono<Response> response = this.webClient
                 .post()
                 .uri("/api/reactive/math/multiply")
                 .bodyValue(multiplyRequestDto(5, 5))
-                .headers(headers -> headers.set("someKey","someValue"))
+                .headers(headers -> headers.set("someKey", "someValue"))
                 .retrieve()
                 .bodyToMono(Response.class)
                 .doOnNext(System.out::println);
@@ -146,6 +152,22 @@ class SpringTests extends BaseTest {
                 .expectNextCount(1)
                 .verifyComplete();
     }
+
+    @Test
+    public void postHeadersAttributeTest() {
+        Mono<Response> response = this.webClientAuth
+                .post()
+                .uri("/api/reactive/math/multiply")
+                .bodyValue(multiplyRequestDto(5, 5))
+                .attribute("auth", "oauth")
+                .retrieve()
+                .bodyToMono(Response.class)
+                .doOnNext(System.out::println);
+        StepVerifier.create(response)
+                .expectNextCount(1)
+                .verifyComplete();
+    }
+
     @Test
     public void badRequestTest() {
         Mono<Response> response = this.webClient
