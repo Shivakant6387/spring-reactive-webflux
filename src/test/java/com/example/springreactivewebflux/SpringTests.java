@@ -9,9 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.net.URI;
 
 class SpringTests extends BaseTest {
     @Autowired
@@ -126,5 +129,22 @@ class SpringTests extends BaseTest {
                 .doOnError(System.out::println);
         StepVerifier.create(response)
                 .verifyError(WebClientResponseException.class);
+    }
+
+    String queryParams = "http://localhost:8866/api/reactive/math/search?count={count}&page={page}";
+
+    @Test
+    public void queryParam() {
+        URI uri = UriComponentsBuilder.fromHttpUrl(queryParams)
+                .build(10, 20);
+        Flux<Integer> integerFlux = this.webClient
+                .get()
+                .uri(uri)
+                .retrieve()
+                .bodyToFlux(Integer.class)
+                .doOnNext(System.out::println);
+        StepVerifier.create(integerFlux)
+                .expectNextCount(2)
+                .verifyComplete();
     }
 }

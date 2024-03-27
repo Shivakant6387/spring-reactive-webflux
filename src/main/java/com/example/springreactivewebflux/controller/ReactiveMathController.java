@@ -5,8 +5,6 @@ import com.example.springreactivewebflux.dto.Response;
 import com.example.springreactivewebflux.service.ReactiveMathService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.json.AbstractJackson2Decoder;
-import org.springframework.http.codec.json.AbstractJackson2Encoder;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,7 +26,8 @@ public class ReactiveMathController {
     public Flux<Response> multiplicationTable(@PathVariable int input) {
         return this.reactiveMathService.multiplicationTable(input);
     }
-    @GetMapping(value = "/table/{input}/stream",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+
+    @GetMapping(value = "/table/{input}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Response> multiplicationTableStream(@PathVariable int input) {
         return this.reactiveMathService.multiplicationTable(input);
     }
@@ -37,5 +36,10 @@ public class ReactiveMathController {
     public Mono<Response> multiply(@RequestBody Mono<MultiplyRequestDto> request, @RequestHeader Map<String, String> headers) {
         System.out.println(headers);
         return this.reactiveMathService.multiply(request);
+    }
+
+    @GetMapping("/search")
+    public Flux<Integer> searchJob(@RequestParam("count") int count, @RequestParam("page") int page) {
+        return Flux.just(count, page);
     }
 }
