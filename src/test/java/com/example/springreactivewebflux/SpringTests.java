@@ -1,11 +1,8 @@
 package com.example.springreactivewebflux;
-
-import com.example.springreactivewebflux.dto.InputFailedValidationResponse;
 import com.example.springreactivewebflux.dto.MultiplyRequestDto;
 import com.example.springreactivewebflux.dto.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -20,6 +17,8 @@ import java.util.Map;
 class SpringTests extends BaseTest {
     @Autowired
     private WebClient webClient;
+    @Autowired
+    private WebClient webClients;
 
     @Test
     public void blockTest() {
@@ -108,6 +107,20 @@ class SpringTests extends BaseTest {
     @Test
     public void postHeadersTest() {
         Mono<Response> response = this.webClient
+                .post()
+                .uri("/api/reactive/math/multiply")
+                .bodyValue(multiplyRequestDto(5, 5))
+                .headers(headers -> headers.setBasicAuth("Shivakant Singh","Do not carry"))
+                .retrieve()
+                .bodyToMono(Response.class)
+                .doOnNext(System.out::println);
+        StepVerifier.create(response)
+                .expectNextCount(1)
+                .verifyComplete();
+    }
+    @Test
+    public void postHeaderTokenTest() {
+        Mono<Response> response = this.webClients
                 .post()
                 .uri("/api/reactive/math/multiply")
                 .bodyValue(multiplyRequestDto(5, 5))
