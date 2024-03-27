@@ -105,6 +105,20 @@ class SpringTests extends BaseTest {
         multiplyRequestDto.setSecond(num2);
         return multiplyRequestDto;
     }
+    @Test
+    public void postHeadersTest() {
+        Mono<Response> response = this.webClient
+                .post()
+                .uri("/api/reactive/math/multiply")
+                .bodyValue(multiplyRequestDto(5, 5))
+                .headers(headers -> headers.setBasicAuth("Shivakant Singh","Do not carry"))
+                .retrieve()
+                .bodyToMono(Response.class)
+                .doOnNext(System.out::println);
+        StepVerifier.create(response)
+                .expectNextCount(1)
+                .verifyComplete();
+    }
 
     @Test
     public void badRequestTest() {
