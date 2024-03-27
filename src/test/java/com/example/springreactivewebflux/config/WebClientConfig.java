@@ -9,6 +9,8 @@ public class WebClientConfig {
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8866").build();
+                .baseUrl("http://localhost:8866")
+                .defaultHeaders(headers -> headers.setBasicAuth("Shivakant Singh","Do not disturb"))
+                .build();
     }
 }

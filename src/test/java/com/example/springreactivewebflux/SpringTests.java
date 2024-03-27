@@ -119,7 +119,20 @@ class SpringTests extends BaseTest {
                 .expectNextCount(1)
                 .verifyComplete();
     }
-
+    @Test
+    public void postHeadersAuthTest() {
+        Mono<Response> response = this.webClient
+                .post()
+                .uri("/api/reactive/math/multiply")
+                .bodyValue(multiplyRequestDto(5, 5))
+                .headers(headers -> headers.set("someKey","someValue"))
+                .retrieve()
+                .bodyToMono(Response.class)
+                .doOnNext(System.out::println);
+        StepVerifier.create(response)
+                .expectNextCount(1)
+                .verifyComplete();
+    }
     @Test
     public void badRequestTest() {
         Mono<Response> response = this.webClient
