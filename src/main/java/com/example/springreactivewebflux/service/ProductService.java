@@ -1,6 +1,6 @@
 package com.example.springreactivewebflux.service;
 
-import com.example.springreactivewebflux.ProductRepository;
+import com.example.springreactivewebflux.repository.ProductRepository;
 import com.example.springreactivewebflux.dto.ProductDto;
 import com.example.springreactivewebflux.util.EntityDtoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
